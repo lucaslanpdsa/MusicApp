@@ -50,7 +50,7 @@ public static class ArtistasExtensions
 
         app.MapPost("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>
         {
-            var artista = new Artista(artistaRequest.nome, artistaRequest.bio);
+            var artista = new Artista(artistaRequest.Nome, artistaRequest.Bio, artistaRequest.FotoPerfil);
 
             dal.Adicionar(artista);
             return Results.Ok();
@@ -67,14 +67,15 @@ public static class ArtistasExtensions
 
         });
 
-        app.MapPut("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequestEdit artistaRequestEdit) => {
-            var artistaAAtualizar = dal.RecuperarPor(a => a.Id == artistaRequestEdit.Id);
+        app.MapPut("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) => {
+            var artistaAAtualizar = dal.RecuperarPor(a => a.Id == artistaRequest.Id);
             if (artistaAAtualizar is null)
             {
                 return Results.NotFound();
             }
-            artistaAAtualizar.Nome = artistaRequestEdit.nome;
-            artistaAAtualizar.Bio = artistaRequestEdit.bio;        
+            artistaAAtualizar.Nome = artistaRequest.Nome;
+            artistaAAtualizar.Bio = artistaRequest.Bio;
+            artistaAAtualizar.FotoPerfil = artistaRequest.FotoPerfil;
             dal.Atualizar(artistaAAtualizar);
             return Results.Ok();
         });

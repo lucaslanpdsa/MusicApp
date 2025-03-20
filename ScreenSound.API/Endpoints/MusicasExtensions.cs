@@ -48,14 +48,14 @@ public static class MusicasExtensions
 
         });
 
-        app.MapPut("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] MusicaRequestEdit musicaRequestEdit) => {
-            var musicaAAtualizar = dal.RecuperarPor(a => a.Id == musicaRequestEdit.Id);
+        app.MapPut("/Musicas", ([FromServices] DAL<Musica> dal, [FromBody] MusicaRequest musicaRequest) => {
+            var musicaAAtualizar = dal.RecuperarPor(a => a.Id == musicaRequest.Id);
             if (musicaAAtualizar is null)
             {
                 return Results.NotFound();
             }
-            musicaAAtualizar.Nome = musicaRequestEdit.nome;
-            musicaAAtualizar.AnoLancamento = musicaRequestEdit.anoLancamento;
+            musicaAAtualizar.Nome = musicaRequest.nome;
+            musicaAAtualizar.AnoLancamento = musicaRequest.anoLancamento;
 
             dal.Atualizar(musicaAAtualizar);
             return Results.Ok();
@@ -86,7 +86,7 @@ public static class MusicasExtensions
 
     private static Genero RequestToEntity(GeneroRequest genero)
     {
-        return new Genero() { Nome = genero.Nome, Descricao = genero.Descricao };
+        return new Genero() { Nome = genero.Nome };
     }
 
     private static ICollection<MusicaResponse> EntityListToResponseList(IEnumerable<Musica> musicaList)
