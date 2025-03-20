@@ -23,17 +23,6 @@ public static class MusicasExtensions
             return Results.Ok(musicaListResponse);
         });
 
-        app.MapGet("/Musicas/{nome}", ([FromServices] DAL<Musica> dal, string nome) =>
-        {
-            var musica = dal.RecuperarPor(a => a.Nome.ToUpper().Equals(nome.ToUpper()));
-            if (musica is null)
-            {
-                return Results.NotFound();
-            }
-            return Results.Ok(EntityToResponse(musica));
-
-        });
-
         app.MapPost("/Musicas", ([FromServices] DAL<Musica> dal, [FromServices] DAL<Genero> dalGenero,[FromBody] MusicaRequest musicaRequest) =>
         {
             var musica = new Musica(musicaRequest.nome) 
@@ -42,7 +31,7 @@ public static class MusicasExtensions
                 AnoLancamento = musicaRequest.anoLancamento,
                 Generos = musicaRequest.Generos is not null?GeneroRequestConverter(musicaRequest.Generos, dalGenero) :
                 new List<Genero>()
-                
+
             };
             dal.Adicionar(musica);
             return Results.Ok();
@@ -107,6 +96,6 @@ public static class MusicasExtensions
 
     private static MusicaResponse EntityToResponse(Musica musica)
     {
-        return new MusicaResponse(musica.Id, musica.Nome!, musica.Artista!.Id, musica.Artista.Nome);
+        return new MusicaResponse(musica.Id, musica.Nome!, musica.Generos, musica.AnoLancamento, musica.Artista );
     }
 }

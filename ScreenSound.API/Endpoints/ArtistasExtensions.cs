@@ -23,15 +23,29 @@ public static class ArtistasExtensions
             return Results.Ok(listaDeArtistaResponse);
         });
 
-        app.MapGet("/Artistas/{nome}", ([FromServices] DAL<Artista> dal, string nome) =>
+        app.MapGet("/Artistas/{idOrNome}", ([FromServices] DAL<Artista> dal, string idOrNome) =>
         {
-            var artista = dal.RecuperarPor(a => a.Nome.ToUpper().Equals(nome.ToUpper()));
-            if (artista is null)
+            // Verifica se o parâmetro é um número (ID)
+            if (int.TryParse(idOrNome, out int id))
             {
-                return Results.NotFound();
+                // Busca por ID
+                var artista = dal.RecuperarPor(a => a.Id.Equals(id));
+                if (artista is null)
+                {
+                    return Results.NotFound("Música não encontrada.");
+                }
+                return Results.Ok(EntityToResponse(artista));
             }
-            return Results.Ok(EntityToResponse(artista));
-
+            else
+            {
+                // Busca por nome
+                var artista = dal.RecuperarPor(a => a.Nome.ToUpper().Equals(idOrNome.ToUpper()));
+                if (artista is null)
+                {
+                    return Results.NotFound("Música não encontrada.");
+                }
+                return Results.Ok(EntityToResponse(artista));
+            }
         });
 
         app.MapPost("/Artistas", ([FromServices] DAL<Artista> dal, [FromBody] ArtistaRequest artistaRequest) =>
